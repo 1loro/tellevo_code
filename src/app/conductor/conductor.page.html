@@ -1,0 +1,40 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-back-button fill="clear" slot="start" style="color: #6A4F9A">
+    </ion-back-button>
+    <ion-title>Viajes</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content id="main-content">
+  
+
+  <ion-content class="ion-padding">
+    <div class="home-container">
+      <ion-img src="assets/img/1.gif" class="logo"></ion-img>
+      <h2 class="welcome-text">Configuración</h2>
+      <br>
+      
+      <div class="location-inputs">
+        <ion-item class="input-item">
+          <ion-input class="input-bordered" [(ngModel)]="comunaOrigen" placeholder="Comuna origen" ></ion-input>
+        </ion-item>
+        <ion-item>
+
+          <ion-input class="input-bordered" [(ngModel)]="comunaDestino" placeholder="Comuna destino" ></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-input class="input-bordered" [(ngModel)]="valorKilometro" placeholder="Ingrese tarifa po" type="number"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-input class="input-bordered" [(ngModel)]="Detalles" placeholder="Detalles"></ion-input>
+        </ion-item>
+      </div>
+
+      <ion-button 
+        expand="block" 
+        class="action-button custom-button"
+        (click)="guardarDatos()">
+      Guardar
+      </ion-button>
+    </div>
+  </ion-content>
