@@ -1,38 +1,28 @@
 <ion-header>
   <ion-toolbar>
-    <ion-back-button fill="clear" slot="start" style="color: #6A4F9A">
-    </ion-back-button>
+    <ion-back-button fill="clear" slot="start" style="color: #6A4F9A"></ion-back-button>
     <ion-title>Viajes</ion-title>
   </ion-toolbar>
 </ion-header>
 <ion-content [fullscreen]="true">
-  
-
-
-
   <ion-list *ngIf="datosViaje.length > 0; else noData" id="main-content">
     <ion-card *ngFor="let viaje of datosViaje" (click)="viaje.expandido = !viaje.expandido" class="viaje-card">
       <ion-card-header>
         <ion-grid>
           <ion-row class="ion-align-items-center">
- 
             <ion-col size="3" class="image-col">
               <img src="/assets/img/1.gif" alt="Travel Image" class="viaje-image"/>
             </ion-col>
-
             <ion-col size="6">
               <ion-card-subtitle>{{ viaje.comunaOrigen }} → {{ viaje.comunaDestino }}</ion-card-subtitle>
-              <ion-text >Viaje disponible</ion-text> 
+              <ion-text>Viaje disponible</ion-text> 
             </ion-col>
-
-
             <ion-col size="3" class="ion-text-right">
               <ion-text class="price">{{ viaje.valorKilometro }} $</ion-text>
             </ion-col>
           </ion-row>
         </ion-grid>
       </ion-card-header>
-
       <ion-card-content *ngIf="viaje.expandido">
         <p *ngIf="viaje.detalles && viaje.detalles.length > 0; else noDetails">{{ viaje.detalles }}</p>
         <ng-template #noDetails>
@@ -42,7 +32,6 @@
       </ion-card-content>
     </ion-card>
   </ion-list>
-
   <ng-template #noData>
     <p>No hay datos disponibles.</p>
   </ng-template>

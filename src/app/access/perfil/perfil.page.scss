@@ -126,3 +126,28 @@ ion-item {
   text-decoration: underline;
   color: #9473B5;
 }
+.logo {
+  animation: slideOut 0.1s forwards, slideIn 0.1s 0.5s forwards;
+}
+
+@keyframes slideOut {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(200%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}

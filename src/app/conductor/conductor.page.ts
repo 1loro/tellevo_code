@@ -1,10 +1,13 @@
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router'; 
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
 import { AuthenticatorService } from '../Servicios/authenticator.service';
-import { AlertController } from '@ionic/angular'; 
-import { ToastController } from '@ionic/angular'; 
+import { AlertController } from '@ionic/angular';
+import { ToastController } from '@ionic/angular';
 import { DataService } from '../Servicios/data.services';
-import { ViajeService } from '../Servicios/viaje.service'; 
+import { ViajeService } from '../Servicios/viaje.service';
+import { Geolocation } from '@ionic-native/geolocation/ngx';
+
+declare var google: any;
 
 @Component({
   selector: 'app-conductor',
@@ -12,66 +15,82 @@ import { ViajeService } from '../Servicios/viaje.service';
   styleUrls: ['./conductor.page.scss'],
 })
 export class ConductorPage implements OnInit {
-  private router: Router; 
-  private alertController: AlertController; 
-  private toastController: ToastController; 
   comunaOrigen: string = ''; 
   comunaDestino: string = ''; 
   valorKilometro: number = 0; 
   Detalles: string = ''; 
+  map: any;
+  autocompleteOrigen: any;
+  autocompleteDestino: any;
+  currentLocationMarker: any;
 
-  constructor(private auth: AuthenticatorService, router: Router, alertController: AlertController, toastController: ToastController, private dataService: DataService, private viajeService: ViajeService) { // Inyectar Router y AlertController en el constructor
-    this.router = router; // Asignar router
-    this.alertController = alertController; 
-    this.toastController = toastController; 
-  }
+  @ViewChild('origenInput', { static: false }) origenInput: any;
+  @ViewChild('destinoInput', { static: false }) destinoInput: any;
+
+  constructor(
+    private auth: AuthenticatorService,
+    private router: Router,
+    private alertController: AlertController,
+    private toastController: ToastController,
+    private dataService: DataService,
+    private viajeService: ViajeService,
+    private geolocation: Geolocation
+  ) {}
 
   ngOnInit() {
-   
+    this.loadGoogleMaps();
   }
 
-  openMenu() {
-    const menu = document.querySelector('ion-menu');
-    if (menu) {
-      menu.open(); 
-      console.log('Menú abierto');
-    } else {
-      console.error('no se encontró el menú');
-    }
+  loadGoogleMaps() {
+    const script = document.createElement('script');
+    script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyDQ8Igfsv_r5J8xKXacVIUc3Xwcup8U-ws&libraries=places`;
+    script.async = true;
+    script.defer = true;
+    script.onload = () => this.initAutocomplete();
+    document.body.appendChild(script);
   }
-  async pass() {
-    const alert = await this.alertController.create({
-      header: 'Admin password',
-      inputs: [
-        {
-          name: 'password',
-          type: 'password',
-          placeholder: 'Contraseña'
-        }
-      ],
-      buttons: [
-        {
-          text: 'Cancelar',
-          role: 'cancel',
-          cssClass: 'secondary',
-          handler: () => {
-            console.log('Cancelado');
-          }
-        }, {
-          text: 'Aceptar',
-          handler: (data) => {
-            if (data.password === '1234') {
-              this.router.navigate(['/controller']);
-            } else {
-              this.presentToast('Contraseña incorrecta');
-            }
-          }
-        }
-      ]
+
+  async initAutocomplete() {
+    const origenInputElement = await this.origenInput.getInputElement();
+    const destinoInputElement = await this.destinoInput.getInputElement();
+
+    this.autocompleteOrigen = new google.maps.places.Autocomplete(origenInputElement);
+    this.autocompleteDestino = new google.maps.places.Autocomplete(destinoInputElement);
+
+    this.autocompleteOrigen.addListener('place_changed', () => {
+      const place = this.autocompleteOrigen.getPlace();
+      if (place.geometry) {
+        this.comunaOrigen = place.formatted_address;
+      }
     });
-    
-    await alert.present(); 
-    const { data: { values: { password } } } = await alert.onDidDismiss(); 
+
+    this.autocompleteDestino.addListener('place_changed', () => {
+      const place = this.autocompleteDestino.getPlace();
+      if (place.geometry) {
+        this.comunaDestino = place.formatted_address;
+      }
+    });
+  }
+
+  async guardarDatos() {
+    if (!this.comunaOrigen || !this.comunaDestino || this.valorKilometro <= 0) {
+      this.presentToast('Complete los campos de Comuna');
+      return;
+    }
+
+    const datos = {
+      comunaOrigen: this.comunaOrigen,
+      comunaDestino: this.comunaDestino,
+      valorKilometro: this.valorKilometro,
+      detalles: this.Detalles,
+      Text: 'Viaje disponible',
+    };
+
+    await this.viajeService.guardarViaje(datos);
+    await this.presentToast('Viaje creado correctamente');
+    setTimeout(() => {
+      this.router.navigate(['/viajes']);  // Navega a la página de viajes
+    }, 1000);
   }
 
   async presentToast(message: string) {
@@ -95,31 +114,5 @@ export class ConductorPage implements OnInit {
   logout() {
     this.auth.logout(); 
     this.router.navigate(['/home']); 
-  }
-
-  async guardarDatos() {
-    console.log('Guardando datos...');
-
-    if (!this.comunaOrigen || !this.comunaDestino || this.valorKilometro <= 0) {
-        this.presentToast('Complete los campos de Comuna'); 
-        return; 
-    }
-
-    const datos = {
-        comunaOrigen: this.comunaOrigen,
-        comunaDestino: this.comunaDestino,
-        valorKilometro: this.valorKilometro,
-        detalles: this.Detalles,
-        Text: 'Viaje disponible' 
-    };
-
-    await this.viajeService.guardarViaje(datos); 
-    console.log('Datos guardados correctamente.');
-
-    
-    await this.presentToast('Viaje creado correctamente'); 
-    setTimeout(() => {
-        this.router.navigate(['/viajes']);
-    }, 1000);
   }
 }

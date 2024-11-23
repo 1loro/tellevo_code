@@ -1,40 +1,46 @@
 <ion-header>
   <ion-toolbar>
-    <ion-back-button fill="clear" slot="start" style="color: #6A4F9A">
-    </ion-back-button>
+    <ion-back-button fill="clear" slot="start" style="color: #6A4F9A"></ion-back-button>
     <ion-title>Viajes</ion-title>
   </ion-toolbar>
 </ion-header>
-<ion-content id="main-content">
-  
 
+<ion-content id="main-content">
   <ion-content class="ion-padding">
     <div class="home-container">
       <ion-img src="assets/img/1.gif" class="logo"></ion-img>
       <h2 class="welcome-text">Configuración</h2>
       <br>
-      
-      <div class="location-inputs">
-        <ion-item class="input-item">
-          <ion-input class="input-bordered" [(ngModel)]="comunaOrigen" placeholder="Comuna origen" ></ion-input>
-        </ion-item>
-        <ion-item>
 
-          <ion-input class="input-bordered" [(ngModel)]="comunaDestino" placeholder="Comuna destino" ></ion-input>
+      <div class="location-inputs">
+        <!-- Input para Origen con Autocomplete -->
+        <ion-item class="input-item">
+          <ion-input #origenInput class="input-bordered" [(ngModel)]="comunaOrigen" placeholder="Origen"></ion-input>
         </ion-item>
+
+        <!-- Input para Destino con Autocomplete -->
         <ion-item>
-          <ion-input class="input-bordered" [(ngModel)]="valorKilometro" placeholder="Ingrese tarifa po" type="number"></ion-input>
+          <ion-input #destinoInput class="input-bordered" [(ngModel)]="comunaDestino" placeholder="Destino"></ion-input>
         </ion-item>
+
+        <!-- Input para Tarifa -->
+        <ion-item>
+          <ion-input class="input-bordered" [(ngModel)]="valorKilometro" placeholder="Ingrese tarifa" type="number"></ion-input>
+        </ion-item>
+
+        <!-- Input para Detalles -->
         <ion-item>
           <ion-input class="input-bordered" [(ngModel)]="Detalles" placeholder="Detalles"></ion-input>
         </ion-item>
       </div>
 
+      <!-- Botón de Guardar -->
       <ion-button 
         expand="block" 
         class="action-button custom-button"
         (click)="guardarDatos()">
-      Guardar
+        Guardar
       </ion-button>
     </div>
   </ion-content>
+</ion-content>

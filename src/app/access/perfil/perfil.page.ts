@@ -10,7 +10,7 @@ import { HttpClient } from '@angular/common/http';
   styleUrls: ['./perfil.page.scss'],
 })
 export class PerfilPage implements OnInit, AfterViewInit {
-  username: string = '';  // Variable para almacenar el nombre de usuario
+  username: string = '';  
   ubicacionActual = '';
   destino = '';
 
@@ -25,7 +25,7 @@ export class PerfilPage implements OnInit, AfterViewInit {
   ) {}
 
   ngOnInit() {
-    this.obtenerUsuario();  // Llama a obtenerUsuario() cuando el componente se inicialice
+    this.obtenerUsuario();  
   }
 
   ngAfterViewInit() {
@@ -33,9 +33,8 @@ export class PerfilPage implements OnInit, AfterViewInit {
   }
 
   async obtenerUsuario() {
-    // Obtiene el usuario logueado usando el servicio de autenticación
     const username = await this.auth.obtenerUsuario();
-    this.username = username;  // Asigna el nombre de usuario (parte del email)
+    this.username = username;  
     console.log('Usuario cargado:', this.username);
   }
 
@@ -50,7 +49,7 @@ export class PerfilPage implements OnInit, AfterViewInit {
 
   async mostrarToast() {
     const toast = await this.toastController.create({
-      message: `Buscando viaje desde ${this.ubicacionActual} a ${this.destino}`,
+      message: `Buscando viajes disponibles`,
       duration: 2000,
       position: 'bottom',
     });
@@ -58,9 +57,7 @@ export class PerfilPage implements OnInit, AfterViewInit {
   }
 
   buscarViajes() {
-    if (this.ubicacionActual.length === 0) {
-      this.mostrarAlerta('Por favor, ingrese su ubicación actual');
-    } else if (this.destino.length === 0) {
+    if (this.destino.length === 0) {
       this.mostrarAlerta('Por favor, ingrese su destino');
     } else {
       this.mostrarToast();
@@ -71,49 +68,22 @@ export class PerfilPage implements OnInit, AfterViewInit {
     }
   }
 
-  // Método para animar el logo (sin cambios)
   async animarLogo() {
-    const element = document.querySelector('ion-img.logo') as HTMLIonImgElement;
-    if (!element) {
-      console.error('No se encontró el maldito gengar');
-      return;
-    }
-
-    console.log('Gengar Gotcha!:', element);
-
-    const animationA = this.animationController
-      .create()
-      .addElement(element)
-      .duration(500)
-      .iterations(1)
-      .fromTo('transform', 'translateX(0)', 'translateX(-100%)')
-      .fromTo('opacity', '1', '0');
-
-    await animationA.play();
-    console.log('Gengar se fue');
-
-    const animationReset = this.animationController
-      .create()
-      .addElement(element)
-      .duration(0)
-      .fromTo('transform', 'translateX(-200%)', 'translateX(200%)');
-
-    await animationReset.play();
-
-    console.log('Gengar volvió');
-
-    const animationB = this.animationController
-      .create()
-      .addElement(element)
-      .duration(500)
-      .iterations(1)
-      .fromTo('transform', 'translateX(200%)', 'translateX(0)')
-      .fromTo('opacity', '0', '1');
-
-    await animationB.play();
-
-    console.log('good');
+  const element = document.querySelector('ion-img.logo') as HTMLIonImgElement;
+  if (!element) {
+    console.error('No se encontró el maldito gengar');
+    return;
   }
+
+  console.log('Gengar Gotcha!:', element);
+
+  element.classList.add('animate'); // Añade la clase para iniciar la animación
+
+  setTimeout(() => {
+    element.classList.remove('animate'); // Remueve la clase después de la animación
+  }, 1500); // Ajusta el tiempo según la duración de la animación
+}
+
 
   logout() {
     this.auth.logout(); 
@@ -167,7 +137,7 @@ export class PerfilPage implements OnInit, AfterViewInit {
   openMenu() {
     const menu = document.querySelector('ion-menu');
     if (menu) {
-      menu.open(); // Abre el menú
+      menu.open(); 
       console.log('Menú abierto');
     } else {
       console.error('No se encontró el menú');

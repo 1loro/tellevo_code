@@ -18,7 +18,14 @@ export class ViajesPage implements OnInit {
   valorKilometro: number = 0;
   Detalles: string = '';
   auth: any; 
-  constructor(private viajeService: ViajeService, private toastController: ToastController, private alertController: AlertController, private authService: AuthService, private router: Router) {
+
+  constructor(
+    private viajeService: ViajeService, 
+    private toastController: ToastController, 
+    private alertController: AlertController, 
+    private authService: AuthService, 
+    private router: Router
+  ) {
     this.auth = authService; 
   }
 
@@ -53,18 +60,16 @@ export class ViajesPage implements OnInit {
     this.cargarDatos(); 
   }
 
-
-
   async contratar(viaje: any) {
     const mensajeConfirmacion = `¿Te gustaría contratar este viaje por $${viaje.valorKilometro} de tarifa?`;
     const confirmacion = await this.mostrarAlertaConfirmacion(mensajeConfirmacion);
 
     if (confirmacion) {
-      const mensaje = `Viaje contratado por: $${viaje.valorKilometro}. Desde: ${viaje.comunaOrigen} - Hasta ${viaje.comunaDestino}`;
+      const mensaje = `Viaje contratado por: $${viaje.valorKilometro}.`;
       this.mostrarToast(mensaje);
 
       setTimeout(() => {
-        this.router.navigate(['/esperando']);
+        this.router.navigate(['/esperando'], { state: { viaje: viaje } });  // Pasa los datos del viaje seleccionado
       }, 2000);
     }
   }
@@ -96,7 +101,6 @@ export class ViajesPage implements OnInit {
     return role !== 'cancel'; 
   }
 
-  
   async mostrarToast(mensaje: string) {
     const toast = await this.toastController.create({
       message: mensaje,
@@ -110,6 +114,7 @@ export class ViajesPage implements OnInit {
     this.auth.logout(); 
     this.router.navigate(['/home']); 
   }
+
   async presentToast(message: string) {
     const toast = await this.toastController.create({
       message: message,
@@ -127,6 +132,7 @@ export class ViajesPage implements OnInit {
     });
     await alert.present();
   }
+
   async pass() {
     const alert = await this.alertController.create({
       header: 'Admin password',
