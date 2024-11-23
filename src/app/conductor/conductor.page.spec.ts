@@ -4,18 +4,22 @@ import { IonicStorageModule } from '@ionic/storage-angular';
 import { ViajeService } from '../Servicios/viaje.service';
 import { Storage } from '@ionic/storage-angular';
 import { AngularFireModule } from '@angular/fire/compat';
-import { AngularFireAuth } from '@angular/fire/compat/auth';  // Importar AngularFireAuth
-import { environment } from '../../environments/environment';  // Asegúrate de que tu entorno de Firebase esté configurado
+import { AngularFireAuth } from '@angular/fire/compat/auth'; 
+import { environment } from '../../environments/environment';  
+import { Geolocation } from '@ionic-native/geolocation/ngx';  
 
 describe('ConductorPage', () => {
   let component: ConductorPage;
   let fixture: ComponentFixture<ConductorPage>;
 
-  // Mock del servicio Storage
+
   let mockStorage: Partial<Storage>;
 
+
+  let mockGeolocation: Partial<Geolocation>;
+
   beforeEach(async () => {
-    // Crea un mock del servicio Storage
+    
     mockStorage = {
       create: jasmine.createSpy('create').and.returnValue(Promise.resolve()),
       get: jasmine.createSpy('get').and.returnValue(Promise.resolve(null)),
@@ -23,16 +27,23 @@ describe('ConductorPage', () => {
       remove: jasmine.createSpy('remove').and.returnValue(Promise.resolve()),
     };
 
+    
+    mockGeolocation = {
+      getCurrentPosition: jasmine.createSpy('getCurrentPosition').and.returnValue(Promise.resolve({ coords: { latitude: 10, longitude: 10 } })),
+      watchPosition: jasmine.createSpy('watchPosition').and.returnValue(Promise.resolve({ coords: { latitude: 10, longitude: 10 } })),
+    };
+
     await TestBed.configureTestingModule({
       declarations: [ConductorPage],
       imports: [
-        IonicStorageModule.forRoot(),  // Configura el almacenamiento
-        AngularFireModule.initializeApp(environment.firebaseConfig),  // Inicializa Firebase
+        IonicStorageModule.forRoot(),
+        AngularFireModule.initializeApp(environment.firebaseConfig),  
       ],
       providers: [
         ViajeService,
-        { provide: Storage, useValue: mockStorage },  // Mockea el servicio Storage
-        AngularFireAuth,  // Agrega el servicio AngularFireAuth
+        { provide: Storage, useValue: mockStorage }, 
+        { provide: Geolocation, useValue: mockGeolocation },  
+        AngularFireAuth,  
       ],
     }).compileComponents();
 
