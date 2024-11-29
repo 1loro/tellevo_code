@@ -13,6 +13,7 @@ export class EsperandoPage implements AfterViewInit {
   map: any;
   currentLocationMarker: any;
   viajeData: any;
+  watchId: any;
 
   constructor(
     private geolocation: Geolocation,
@@ -20,7 +21,7 @@ export class EsperandoPage implements AfterViewInit {
   ) {
     const navigation = this.router.getCurrentNavigation();
     if (navigation?.extras?.state) {
-      this.viajeData = navigation.extras.state['viaje'];  // Utiliza la notación de corchetes
+      this.viajeData = navigation.extras.state['viaje'];  
     }
   }
 
@@ -109,13 +110,23 @@ export class EsperandoPage implements AfterViewInit {
       const mapElement = document.getElementById('map');
       if (mapElement) {
         this.map = new google.maps.Map(mapElement, mapOptions);
+
+        const icon = {
+          url: 'assets/img/1.gif', 
+          scaledSize: new google.maps.Size(40, 40), 
+          origin: new google.maps.Point(0, 0), 
+          anchor: new google.maps.Point(20, 20) 
+        };
+
         this.currentLocationMarker = new google.maps.Marker({
           position: latLng,
           map: this.map,
-          title: 'Ubicación Actual'
+          title: 'Ubicación Actual',
+          icon: icon 
         });
 
         this.calculateAndDisplayRoute(lastViaje);
+        this.watchPosition();  
       }
 
     }).catch((error) => {
@@ -143,7 +154,22 @@ export class EsperandoPage implements AfterViewInit {
     });
   }
 
+  watchPosition() {
+    this.watchId = this.geolocation.watchPosition().subscribe((data) => {
+      if ('coords' in data) {
+        const latLng = new google.maps.LatLng(data.coords.latitude, data.coords.longitude);
+        this.currentLocationMarker.setPosition(latLng);
+        this.map.setCenter(latLng);
+      } else {
+        console.error('Error obteniendo la ubicación', data);
+      }
+    });
+  }
+
   cancelarViaje() {
+    if (this.watchId) {
+      this.watchId.unsubscribe();  
+    }
     console.log('Viaje cancelado');
     this.router.navigate(['/viajes']);
   }
